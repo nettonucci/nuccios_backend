@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Controller, Get, Body, Post, Logger, Param } from "@nestjs/common";
+import { HttpException, HttpStatus, Controller, Get, Body, Post, Logger, Param, Put } from "@nestjs/common";
 
 import {CompaniesEntity} from '../../entities/companies.entity';
 import { CompaniesService } from "./service";
@@ -31,5 +31,15 @@ export class CompaniesController {
                 throw new HttpException('Data not provided', HttpStatus.BAD_REQUEST);
         }
         return this.companiesService.create(data);
+    }
+
+    @Put(':id')
+    async update(@Param('id') id: number, @Body() data: Partial<CompaniesEntity>) {
+        return this.companiesService.update(id, data);
+    }
+
+    @Put('update-pass/:id')
+    async updatePassword(@Param('id') id: number, @Body() data: Partial<CompaniesEntity>) {
+        return this.companiesService.updatePassword(id, data);
     }
 }

@@ -57,4 +57,46 @@ export class CompaniesService {
         return company; 
     }
 
+    async update(id: number, data: Partial<CompaniesEntity>): Promise<string> {
+
+        const { email, celular, ramo, cnpj } = data;
+
+        let company = await this.companiesRepository.findOne({ where: { id } });
+
+        if (!company) {
+            throw new HttpException('Company not found', HttpStatus.NOT_FOUND);
+        }
+
+        await this.companiesRepository.update({ id }, { email, celular, ramo, cnpj });
+
+        return JSON.parse('{"message": "Company updated"}');
+
+    }
+
+    async updatePassword(id: number, data: any): Promise<string> {
+            
+        const { newPassword, oldPassword } = data;
+
+        let company = await this.companiesRepository.findOne({ where: { id } });
+
+        if (!company) {
+            throw new HttpException('Company not found', HttpStatus.NOT_FOUND);
+        }
+
+        const isMatch = await bcrypt.compare(oldPassword, company.senha);
+
+        if (!isMatch) {
+            throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
+        }  
+
+        company.senha = await bcrypt.hash(newPassword, 10);
+
+        await this.companiesRepository.update({ id }, {
+            senha: company.senha
+        });
+
+        return JSON.parse('{"message": "Password updated"}');
+
+        }
+
 }
