@@ -4,11 +4,13 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 import {CompaniesEntity} from '../../entities/companies.entity';
+import { MailService } from '../mail/service';
 
 @Injectable()
 export class CompaniesService {
     constructor(
         @InjectRepository(CompaniesEntity) private readonly companiesRepository: Repository<CompaniesEntity>,
+        private readonly mailService: MailService,
     ) {}
 
     async index(): Promise<CompaniesEntity[]> {
@@ -34,7 +36,7 @@ export class CompaniesService {
 
     }
 
-    async create(data: CompaniesEntity): Promise<CompaniesEntity> {
+    async create(data: CompaniesEntity): Promise<string> {
 
         const { email, senha, cnpj, nome_empresa } = data;
 
@@ -48,13 +50,15 @@ export class CompaniesService {
 
         data.senha = await bcrypt.hash(senha, 10);
 
+        data.activeAccountToken = Math.random().toString().substring(2, 8)
+
         const company = this.companiesRepository.create(data);
 
-        await this.companiesRepository.save(company);
+        const rep = await this.companiesRepository.save(company);
 
-        company.senha = '********';
+        await this.mailService.sendMailToActiveAccount(data.email, data.activeAccountToken, data.nome_empresa);
 
-        return company; 
+        return JSON.parse(`{"message": "Company created", "id": ${rep.id}}`); 
     }
 
     async update(id: number, data: Partial<CompaniesEntity>): Promise<string> {
@@ -98,5 +102,22 @@ export class CompaniesService {
         return JSON.parse('{"message": "Password updated"}');
 
         }
+
+    async activeAccount(id: number, token: string): Promise<string> {
+        
+        let company = await this.companiesRepository.findOne({ where: { id } });
+
+        if (!company) {
+            throw new HttpException('Company not found', HttpStatus.NOT_FOUND);
+        }
+        
+        if (company.activeAccountToken !== token) {
+            throw new HttpException('Invalid token', HttpStatus.BAD_REQUEST);
+        }
+        
+        await this.companiesRepository.update({ id }, { activeAccountToken: null, active: true });
+
+        return JSON.parse('{"message": "Account activated"}');
+    }
 
 }

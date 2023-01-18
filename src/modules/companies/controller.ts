@@ -42,4 +42,9 @@ export class CompaniesController {
     async updatePassword(@Param('id') id: number, @Body() data: Partial<CompaniesEntity>) {
         return this.companiesService.updatePassword(id, data);
     }
+
+    @Post('active-account/:id')
+    async activeAccount(@Param('id') id: number, @Body() data: any) {
+        return this.companiesService.activeAccount(id, data.token);
+    }
 }

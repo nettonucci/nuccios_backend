@@ -47,6 +47,16 @@ export class CompaniesEntity {
     senha: string;
 
     @Column({
+        default: false
+    })
+    active: boolean;
+
+    @Column({
+        nullable: true,
+    })
+    activeAccountToken!: string;
+
+    @Column({
         unique: true,
         nullable: true,
     })

@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
+
 import { DatabaseModule } from './modules/database/module';
 import { CompaniesModule } from './modules/companies/module';
+import { MailModule } from './modules/mail/module';
+import { MailTemplatesModule } from './modules/mail_templates/module';
+
+import { SecretsModule } from './modules/utils/secrets/module';
 
 @Module({
-  imports: [DatabaseModule, CompaniesModule],
+  imports: [DatabaseModule, CompaniesModule, MailModule, MailTemplatesModule, SecretsModule],
   controllers: [],
   providers: [],
 })
