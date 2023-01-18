@@ -31,15 +31,36 @@ export class MailService {
     }
 
 
-    async sendMailToActiveAccount(to: string, token: string, name: string) {
-        const html = this.mailTemplatesService.getRegisterTemplate(name, token);
+    async sendMailToActiveCompanyAccount(to: string, token: string, name: string) {
+        const html = this.mailTemplatesService.getRegisterCompanyTemplate(name, token);
 
         const transporter = await this.createTransporter();
 
         const mailOptions = {
-            from: `Sistema NucciOS <${this.secrets.EMAIL}>`,
+            from: `Sistema NucciO.S <${this.secrets.EMAIL}>`,
             to,
-            subject: 'Ativação de conta',
+            subject: 'Ativação de conta da empresa',
+            html
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log(error);
+                Logger.error(`sendMail error: ${error}`);
+            }
+            Logger.log(`sendMail info: ${info.response}`);
+        });
+    }
+
+    async sendMailToActiveUserAccount(to: string, token: string, company_name: string, user_name: string) {
+        const html = this.mailTemplatesService.getRegiterUserTemplate(company_name, user_name, token);
+
+        const transporter = await this.createTransporter();
+
+        const mailOptions = {
+            from: `Sistema NucciO.S <${this.secrets.EMAIL}>`,
+            to,
+            subject: 'Ativação de conta do usuário',
             html
         };
 

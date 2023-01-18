@@ -10,5 +10,6 @@ import { MailModule } from '../mail/module';
     imports: [TypeOrmModule.forFeature([CompaniesEntity]), MailModule],
     controllers: [CompaniesController],
     providers: [CompaniesService],
+    exports: [CompaniesService],
 })
 export class CompaniesModule {}

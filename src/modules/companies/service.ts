@@ -18,6 +18,8 @@ export class CompaniesService {
 
         companies.forEach(company => {
             company.senha = '********';
+            company.activeAccountToken = '********';
+            company.resetPasswordToken = '********';
         });
 
         return companies;
@@ -31,6 +33,8 @@ export class CompaniesService {
         }
 
         company.senha = '********';
+        company.activeAccountToken = '********';
+        company.resetPasswordToken = '********';
 
         return company;
 
@@ -56,7 +60,7 @@ export class CompaniesService {
 
         const rep = await this.companiesRepository.save(company);
 
-        await this.mailService.sendMailToActiveAccount(data.email, data.activeAccountToken, data.nome_empresa);
+        await this.mailService.sendMailToActiveCompanyAccount(data.email, data.activeAccountToken, data.nome_empresa);
 
         return JSON.parse(`{"message": "Company created", "id": ${rep.id}}`); 
     }
