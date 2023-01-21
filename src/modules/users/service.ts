@@ -61,6 +61,10 @@ export class UsersService {
             throw new HttpException('Company not found', HttpStatus.NOT_FOUND);
         }
 
+        if (!company.active) {
+            throw new HttpException('Company not active', HttpStatus.BAD_REQUEST);
+        }
+
         if (userExists) {
             throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
         }
@@ -73,7 +77,7 @@ export class UsersService {
 
         const resp = await this.userRepository.save(user);
 
-        await this.mailService.sendMailToActiveUserAccount(data.email, data.activeAccountToken, company.nome_empresa, data.name);
+        await this.mailService.sendMailToActiveUserAccount(company.email, data.activeAccountToken, company.nome_empresa, data.name);
 
         return JSON.parse(`{"message": "User created", "id": ${resp.id}}`);
     }
