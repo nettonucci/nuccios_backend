@@ -58,11 +58,11 @@ export class CompaniesService {
 
         const company = this.companiesRepository.create(data);
 
-        const rep = await this.companiesRepository.save(company);
+        const resp = await this.companiesRepository.save(company);
 
         await this.mailService.sendMailToActiveCompanyAccount(data.email, data.activeAccountToken, data.nome_empresa);
 
-        return JSON.parse(`{"message": "Company created", "id": ${rep.id}}`); 
+        return JSON.parse(`{"message": "Company created", "id": ${resp.id}}`); 
     }
 
     async update(id: number, data: Partial<CompaniesEntity>): Promise<string> {
@@ -73,6 +73,10 @@ export class CompaniesService {
 
         if (!company) {
             throw new HttpException('Company not found', HttpStatus.NOT_FOUND);
+        }
+
+        if (company.active === false) {
+            throw new HttpException('Company not activated', HttpStatus.BAD_REQUEST);
         }
 
         await this.companiesRepository.update({ id }, { email, celular, ramo, cnpj });
@@ -89,6 +93,10 @@ export class CompaniesService {
 
         if (!company) {
             throw new HttpException('Company not found', HttpStatus.NOT_FOUND);
+        }
+
+        if (company.active === false) {
+            throw new HttpException('Company not activated', HttpStatus.BAD_REQUEST);
         }
 
         const isMatch = await bcrypt.compare(oldPassword, company.senha);
@@ -109,7 +117,7 @@ export class CompaniesService {
 
     async activeAccount(id: number, token: string): Promise<string> {
         
-        let company = await this.companiesRepository.findOne({ where: { id } });
+        const company = await this.companiesRepository.findOne({ where: { id } });
 
         if (!company) {
             throw new HttpException('Company not found', HttpStatus.NOT_FOUND);

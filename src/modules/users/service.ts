@@ -71,10 +71,70 @@ export class UsersService {
 
         const user = this.userRepository.create(data);
 
-        await this.userRepository.save(user);
+        const resp = await this.userRepository.save(user);
 
         await this.mailService.sendMailToActiveUserAccount(data.email, data.activeAccountToken, company.nome_empresa, data.name);
 
-        return JSON.parse('{"message": "User created"}');
+        return JSON.parse(`{"message": "User created", "id": ${resp.id}}`);
+    }
+
+    async update(id: number, data: UsersEntity): Promise<string> {
+        const user = await this.userRepository.findOne({ where: { id } });
+
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+
+        if (user.active === false) {
+            throw new HttpException('User not active', HttpStatus.BAD_REQUEST);
+        }
+
+        await this.userRepository.update({ id }, {name: data.name});
+
+        return JSON.parse('{"message": "User updated"}');
+    }
+
+    async updatePassword(id: number, data: any): Promise<string> {
+
+        const { newPassword, oldPassword } = data;
+
+        const user = await this.userRepository.findOne({ where: { id } });
+
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+
+        if (user.active === false) {
+            throw new HttpException('User not active', HttpStatus.BAD_REQUEST);
+        }
+
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+        if (!isMatch) {
+            throw new HttpException('Old password is incorrect', HttpStatus.BAD_REQUEST);
+        }
+
+        const password = await bcrypt.hash(newPassword, 10);
+
+        await this.userRepository.update({ id }, {password});
+
+        return JSON.parse('{"message": "Password updated"}');
+    }
+
+    async activeAccount(id: number, token: string): Promise<string> {
+        
+        const user = await this.userRepository.findOne({ where: { id } });
+
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+
+        if (user.activeAccountToken !== token) {
+            throw new HttpException('Invalid token', HttpStatus.BAD_REQUEST);
+        }
+
+        await this.userRepository.update({ id }, { activeAccountToken: null, active : true});
+
+        return JSON.parse('{"message": "Account activated"}');
     }
 }

@@ -26,14 +26,21 @@ export class UsersController {
         return this.usersService.create(data);
     }
 
-    // @Put(':id')
-    // async update(@Param('id')
-    // id: number, @Body() data: any) {
-    //     return this.usersService.update(id, data);
-    // }
+    @Put(':id')
+    async update(@Param('id')
+    id: number, @Body() data: any) {
+        return this.usersService.update(id, data);
+    }
 
-    // @Delete(':id')
-    // async delete(@Param('id') id: number) {
-    //     return this.usersService.delete(id);
-    // }
+    @Put('update-pass/:id')
+    async updatePassword(@Param('id')
+    id: number, @Body() data: any) {
+        return this.usersService.updatePassword(id, data);
+    }
+
+    @Post('active-account/:id')
+    async activeAccount(@Param('id')
+    id: number, @Body() data: any) {
+        return this.usersService.activeAccount(id, data.token);
+    }
 }
