@@ -3,8 +3,12 @@ import {
     CreateDateColumn,
     Entity,
     PrimaryGeneratedColumn,
-    UpdateDateColumn
+    UpdateDateColumn,
+    OneToMany
 } from 'typeorm';
+import { ClientsEntity } from './clients.entity';
+import { UsersEntity } from './users.entity';
+import { ServiceOrderEntity } from './serviceOrder.entity';
 
 @Entity('companies')
 export class CompaniesEntity {
@@ -12,10 +16,10 @@ export class CompaniesEntity {
     id: number;
 
     @Column()
-    nome_empresa: string;
+    company_name: string;
 
     @Column()
-    possui_cpnj: boolean;
+    has_cnpj: boolean;
 
     @Column({
         unique: true,
@@ -24,7 +28,7 @@ export class CompaniesEntity {
     cnpj: string;
 
     @Column()
-    ramo: string;
+    branch: string;
 
     @Column({
         nullable: true
@@ -32,7 +36,7 @@ export class CompaniesEntity {
     logo: string;
 
     @Column()
-    nome_proprietario: string;
+    owner_name: string;
 
     @Column()
     cpf: string;
@@ -41,10 +45,13 @@ export class CompaniesEntity {
     email: string;
 
     @Column()
-    celular: string;
+    phone: string;
 
     @Column()
-    senha: string;
+    cellphone: string;
+
+    @Column()
+    password: string;
 
     @Column({
         default: false
@@ -62,9 +69,22 @@ export class CompaniesEntity {
     })
     resetPasswordToken!: string;
 
-    @CreateDateColumn()
+    @OneToMany(type => UsersEntity, user => user.company)
+    users: UsersEntity[];
+
+    @OneToMany(type => ClientsEntity, client => client.company)
+    clients: ClientsEntity[];
+
+    @OneToMany(type => ServiceOrderEntity, serviceOrder => serviceOrder.company)
+    serviceOrders: ServiceOrderEntity[];
+
+    @CreateDateColumn({
+        type: 'timestamp with time zone',
+    })
     created_at: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({
+        type: 'timestamp with time zone',
+    })
     updated_at: Date;
 }

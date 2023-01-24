@@ -13,39 +13,82 @@ export class UsersService {
     constructor(@InjectRepository(UsersEntity) private readonly userRepository: Repository<UsersEntity>, private readonly mailService: MailService, private readonly companiesService: CompaniesService) {}
 
     async index(): Promise<UsersEntity[]> {
-        const users = await this.userRepository.find();
-
-        users.forEach(user => {
-            user.password = '********';
-            user.activeAccountToken = '********';
-            user.passwordResetToken = '********';
+        const users = await this.userRepository.find({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                active: true,
+                company_id: true,
+                company:
+                {
+                    company_name: true,
+                    cnpj: true,
+                    id: true,
+                    branch: true,
+                    email: true,
+                    cellphone: true,
+                }
+            },
+            relations: ['company'],
         });
 
         return users;
     }
 
     async showByCompany(id: number): Promise<UsersEntity[]> {
-        const users = await this.userRepository.find({ where: { company_id: id } });
-
-        users.forEach(user => {
-            user.password = '********';
-            user.activeAccountToken = '********';
-            user.passwordResetToken = '********';
-        });
+        const users = await this.userRepository.find(
+            {
+                where: { 
+                    company_id: id 
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    active: true,
+                    company_id: true,
+                    company:
+                    {
+                        company_name: true,
+                        cnpj: true,
+                        id: true,
+                        branch: true,
+                        email: true,
+                        cellphone: true,
+                    }
+                },
+                relations: ['company'],
+            });
 
         return users;
     }
 
     async show(id: number): Promise<UsersEntity> {
-        const user = await this.userRepository.findOne({ where: { id } });
+        const user = await this.userRepository.findOne({ 
+            where: { id }, 
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                active: true,
+                company_id: true,
+                company:
+                {
+                    company_name: true,
+                    cnpj: true,
+                    id: true,
+                    branch: true,
+                    email: true,
+                    cellphone: true,
+                }
+            }, 
+            relations: ['company'],  
+        });
 
         if (!user) {
             throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
-
-        user.password = '********';
-        user.activeAccountToken = '********';
-        user.passwordResetToken = '********';
 
         return user;
     }
@@ -77,7 +120,7 @@ export class UsersService {
 
         const resp = await this.userRepository.save(user);
 
-        await this.mailService.sendMailToActiveUserAccount(company.email, data.activeAccountToken, company.nome_empresa, data.name);
+        await this.mailService.sendMailToActiveUserAccount(company.email, data.activeAccountToken, company.company_name, data.name);
 
         return JSON.parse(`{"message": "User created", "id": ${resp.id}}`);
     }

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
-import {CompaniesEntity} from '../../entities/companies.entity';
+import { CompaniesEntity } from '../../entities/companies.entity';
 import { MailService } from '../mail/service';
 
 @Injectable()
@@ -14,27 +14,25 @@ export class CompaniesService {
     ) {}
 
     async index(): Promise<CompaniesEntity[]> {
-        const companies =  await this.companiesRepository.find();
-
-        companies.forEach(company => {
-            company.senha = '********';
-            company.activeAccountToken = '********';
-            company.resetPasswordToken = '********';
+        const companies =  await this.companiesRepository.find({
+            select: ['id', 'company_name', 'has_cnpj', 'cnpj', 'branch', 'logo', 'owner_name', 'cpf', 'email', 'phone', 'cellphone', 'active']
         });
 
         return companies;
     }
 
     async show(id: number): Promise<CompaniesEntity> {
-        const company = await this.companiesRepository.findOne({ where: { id } });
+        const company = await this.companiesRepository.findOne(
+            { where: 
+                { 
+                    id 
+                },
+                select: ['id', 'company_name', 'has_cnpj', 'cnpj', 'branch', 'logo', 'owner_name', 'cpf', 'email', 'phone', 'cellphone', 'active']
+            });
 
         if (!company) {
             throw new HttpException('Company not found', HttpStatus.NOT_FOUND);
         }
-
-        company.senha = '********';
-        company.activeAccountToken = '********';
-        company.resetPasswordToken = '********';
 
         return company;
 
@@ -42,17 +40,17 @@ export class CompaniesService {
 
     async create(data: CompaniesEntity): Promise<string> {
 
-        const { email, senha, cnpj, nome_empresa } = data;
+        const { email, password, cnpj, company_name } = data;
 
         const companyExists = await this.companiesRepository.findOne({
-            where: [ { email }, { cnpj }, { nome_empresa } ]
+            where: [ { email }, { cnpj }, { company_name } ]
         });
 
         if (companyExists) {
             throw new HttpException('Company already exists', HttpStatus.BAD_REQUEST);
         }
 
-        data.senha = await bcrypt.hash(senha, 10);
+        data.password = await bcrypt.hash(password, 10);
 
         data.activeAccountToken = Math.random().toString().substring(2, 8)
 
@@ -60,14 +58,14 @@ export class CompaniesService {
 
         const resp = await this.companiesRepository.save(company);
 
-        await this.mailService.sendMailToActiveCompanyAccount(data.email, data.activeAccountToken, data.nome_empresa);
+        await this.mailService.sendMailToActiveCompanyAccount(data.email, data.activeAccountToken, data.company_name);
 
         return JSON.parse(`{"message": "Company created", "id": ${resp.id}}`); 
     }
 
     async update(id: number, data: Partial<CompaniesEntity>): Promise<string> {
 
-        const { email, celular, ramo, cnpj } = data;
+        const { email, cellphone, branch, cnpj } = data;
 
         let company = await this.companiesRepository.findOne({ where: { id } });
 
@@ -79,7 +77,7 @@ export class CompaniesService {
             throw new HttpException('Company not activated', HttpStatus.BAD_REQUEST);
         }
 
-        await this.companiesRepository.update({ id }, { email, celular, ramo, cnpj });
+        await this.companiesRepository.update({ id }, { email, cellphone, branch, cnpj });
 
         return JSON.parse('{"message": "Company updated"}');
 
@@ -99,16 +97,16 @@ export class CompaniesService {
             throw new HttpException('Company not activated', HttpStatus.BAD_REQUEST);
         }
 
-        const isMatch = await bcrypt.compare(oldPassword, company.senha);
+        const isMatch = await bcrypt.compare(oldPassword, company.password);
 
         if (!isMatch) {
             throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
         }  
 
-        company.senha = await bcrypt.hash(newPassword, 10);
+        company.password = await bcrypt.hash(newPassword, 10);
 
         await this.companiesRepository.update({ id }, {
-            senha: company.senha
+            password: company.password
         });
 
         return JSON.parse('{"message": "Password updated"}');

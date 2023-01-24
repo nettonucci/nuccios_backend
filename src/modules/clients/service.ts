@@ -14,15 +14,70 @@ export class ClientsService {
     ) { }
 
     async findAll(): Promise<ClientsEntity[]> {
-        return await this.clientsRepository.find();
+        return await this.clientsRepository.find({
+            select: {
+                company:
+                {
+                    company_name: true,
+                    cnpj: true,
+                    id: true,
+                    branch: true,
+                    email: true,
+                    cellphone: true,
+                }
+            }, 
+            relations: ['company'],  
+        });
     }
 
     async findOne(id: number): Promise<ClientsEntity> {
-        return await this.clientsRepository.findOne({ where: { id }});
+        const client = await this.clientsRepository.findOne({ 
+            where: { id }, 
+            select: {
+                company:
+                {
+                    company_name: true,
+                    cnpj: true,
+                    id: true,
+                    branch: true,
+                    email: true,
+                    cellphone: true,
+                }
+            }, 
+            relations: ['company'],  
+        });
+
+        if (!client) {
+            throw new HttpException('Client not found', HttpStatus.NOT_FOUND);
+        }
+
+        return client;
     }
 
     async findByCompanyId(id: number): Promise<ClientsEntity[]> {
-        return await this.clientsRepository.find({ where: { company_id: id }});
+
+        await this.companiesService.show(id);
+
+        const clients = await this.clientsRepository.find(
+            { 
+                where: { 
+                    company_id: id 
+                },
+                select: {
+                    company:
+                    {
+                        company_name: true,
+                        cnpj: true,
+                        id: true,
+                        branch: true,
+                        email: true,
+                        cellphone: true,
+                    }
+                }, 
+                relations: ['company'],  
+            });
+
+        return clients;
     }
 
     async create(data: ClientsEntity): Promise<string> {

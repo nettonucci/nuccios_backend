@@ -4,7 +4,12 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
+    ManyToOne,
+    OneToMany,
+    JoinColumn
 } from 'typeorm';
+import { CompaniesEntity } from './companies.entity';
+import { ServiceOrderEntity } from './serviceOrder.entity';
 
 @Entity('users')
 export class UsersEntity {
@@ -39,15 +44,21 @@ export class UsersEntity {
     })
     passwordResetToken!: string;
 
-    @Column({
-        nullable: true
-    })
-    passwordResetExpires!: Date;
+    @ManyToOne(type => CompaniesEntity, company => company.users)
+    @JoinColumn({ name: 'company_id' })
+    company: CompaniesEntity;
 
-    @CreateDateColumn()
+    @OneToMany(type => ServiceOrderEntity, serviceOrder => serviceOrder.user)
+    serviceOrders: ServiceOrderEntity[];
+
+    @CreateDateColumn({
+        type: 'timestamp with time zone',
+    })
     created_at: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({
+        type: 'timestamp with time zone',
+    })
     updated_at: Date;
 }
 

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Controller, Get, Body, Post, Logger, Param, Put } from "@nestjs/common";
 
-import {CompaniesEntity} from '../../entities/companies.entity';
+import { CompaniesEntity } from '../../entities/companies.entity';
 import { CompaniesService } from "./service";
 
 @Controller('companies')
@@ -19,17 +19,6 @@ export class CompaniesController {
 
     @Post()
     async create(@Body() data: CompaniesEntity) {
-        if (!data.hasOwnProperty('nome_empresa') || 
-            !data.hasOwnProperty('ramo') || 
-            !data.hasOwnProperty('nome_proprietario') || 
-            !data.hasOwnProperty('cpf') || 
-            !data.hasOwnProperty('email') || 
-            !data.hasOwnProperty('celular') || 
-            !data.hasOwnProperty('senha')) 
-        {
-                Logger.error('Data not provided');
-                throw new HttpException('Data not provided', HttpStatus.BAD_REQUEST);
-        }
         return this.companiesService.create(data);
     }
 
