@@ -57,6 +57,16 @@ export class ServiceOrderEntity {
     })
     device_password: string;
 
+    @Column({
+        default: 0
+    })
+    total_price: number;
+
+    @Column({
+        nullable: true
+    })
+    payment_method: string;
+
     @Column()
     status: string;
 

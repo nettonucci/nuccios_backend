@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
 
 import { DatabaseModule } from './modules/database/module';
 import { CompaniesModule } from './modules/companies/module';
@@ -11,6 +10,7 @@ import { ServiceOrdersModule } from './modules/service_orders/module';
 import { ReservedIdsModule } from './modules/reserved_ids/module';
 import { PublicCommentsModule } from './modules/public_comments/module';
 import { PrivateCommentsModule } from './modules/private_comments/module';
+import { StockModule } from './modules/stock/module';
 
 import { SecretsModule } from './modules/utils/secrets/module';
 
@@ -26,7 +26,8 @@ import { SecretsModule } from './modules/utils/secrets/module';
     ServiceOrdersModule,
     ReservedIdsModule,
     PublicCommentsModule,
-    PrivateCommentsModule
+    PrivateCommentsModule,
+    StockModule
   ],
   controllers: [],
   providers: [],
