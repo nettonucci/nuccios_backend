@@ -9,6 +9,8 @@ import { UsersModule } from './modules/users/module';
 import { ClientsModule } from './modules/clients/module';
 import { ServiceOrdersModule } from './modules/service_orders/module';
 import { ReservedIdsModule } from './modules/reserved_ids/module';
+import { PublicCommentsModule } from './modules/public_comments/module';
+import { PrivateCommentsModule } from './modules/private_comments/module';
 
 import { SecretsModule } from './modules/utils/secrets/module';
 
@@ -22,7 +24,9 @@ import { SecretsModule } from './modules/utils/secrets/module';
     UsersModule, 
     ClientsModule, 
     ServiceOrdersModule,
-    ReservedIdsModule
+    ReservedIdsModule,
+    PublicCommentsModule,
+    PrivateCommentsModule
   ],
   controllers: [],
   providers: [],

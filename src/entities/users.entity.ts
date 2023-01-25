@@ -10,6 +10,8 @@ import {
 } from 'typeorm';
 import { CompaniesEntity } from './companies.entity';
 import { ServiceOrderEntity } from './serviceOrder.entity';
+import { PublicCommentsEntity } from './publicComents.entity';
+import { PrivateCommentsEntity } from './privateComents.entity';
 
 @Entity('users')
 export class UsersEntity {
@@ -50,6 +52,12 @@ export class UsersEntity {
 
     @OneToMany(type => ServiceOrderEntity, serviceOrder => serviceOrder.user)
     serviceOrders: ServiceOrderEntity[];
+
+    @OneToMany(type => PublicCommentsEntity, publicComment => publicComment.user)
+    publicComments: PublicCommentsEntity[];
+
+    @OneToMany(type => PrivateCommentsEntity, privateComment => privateComment.user)
+    privateComments: PrivateCommentsEntity[];
 
     @CreateDateColumn({
         type: 'timestamp with time zone',

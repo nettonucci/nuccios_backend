@@ -5,11 +5,14 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
     ManyToOne,
-    JoinColumn
+    JoinColumn,
+    OneToMany
 } from 'typeorm';
 import { CompaniesEntity } from './companies.entity';
 import { UsersEntity } from './users.entity';
 import { ClientsEntity } from './clients.entity';
+import { PublicCommentsEntity } from './publicComents.entity';
+import { PrivateCommentsEntity } from './privateComents.entity';
 
 @Entity('service_orders')
 export class ServiceOrderEntity {
@@ -68,6 +71,12 @@ export class ServiceOrderEntity {
     @ManyToOne(type => ClientsEntity, client => client.serviceOrders)
     @JoinColumn({ name: 'client_id' })
     client: ClientsEntity;
+
+    @OneToMany(type => PublicCommentsEntity, publicComment => publicComment.serviceOrder)
+    publicComments: PublicCommentsEntity[];
+
+    @OneToMany(type => PrivateCommentsEntity, privateComment => privateComment.serviceOrder)
+    privateComments: PrivateCommentsEntity[];
 
     @CreateDateColumn({
         type: 'timestamp with time zone',
