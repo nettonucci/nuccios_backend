@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -18,13 +18,26 @@ export class StockService {
         return await this.stockRepository.find({ where: { company_id: companyId } });
     }
 
+    async show(id: number): Promise<StockEntity> {
+        const stock = await this.stockRepository.findOne({
+            where: { id },
+        });
+
+        if (!stock) {
+            throw new HttpException('Stock not found', HttpStatus.NOT_FOUND);
+        }
+
+        return stock;
+
+    }
+
     async create(stock: StockEntity): Promise<StockEntity> {
         await this.companiesService.show(stock.company_id);
         
         return await this.stockRepository.save(stock);
     }
 
-    async update(id: number, stock: StockEntity): Promise<StockEntity> {
+    async update(id: number, stock: any): Promise<StockEntity> {
         await this.stockRepository.update(id, stock);
         return await this.stockRepository.findOne({
             where: { id }

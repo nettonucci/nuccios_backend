@@ -12,6 +12,8 @@ import { ServiceOrderEntity } from './serviceOrder.entity';
 import { PublicCommentsEntity } from './publicComents.entity';
 import { PrivateCommentsEntity } from './privateComents.entity';
 import { StockEntity } from './stock.entity';
+import { ServiceOrderStockValuesEntity } from './serviceOrderStockValues.entity';
+import { ServiceOrderDetachedValuesEntity } from './serviceOrdersDetachedValues.entity';
 
 @Entity('companies')
 export class CompaniesEntity {
@@ -89,6 +91,12 @@ export class CompaniesEntity {
 
     @OneToMany(type => StockEntity, stock => stock.company)
     stock: StockEntity[];
+
+    @OneToMany(type => ServiceOrderStockValuesEntity, serviceOrderStockValues => serviceOrderStockValues.company)
+    serviceOrderStockValues: ServiceOrderStockValuesEntity[];
+
+    @OneToMany(type => ServiceOrderDetachedValuesEntity, serviceOrderDetachedValues => serviceOrderDetachedValues.company)
+    serviceOrderDetachedValues: ServiceOrderDetachedValuesEntity[];
 
     @CreateDateColumn({
         type: 'timestamp with time zone',

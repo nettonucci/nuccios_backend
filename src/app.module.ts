@@ -11,8 +11,11 @@ import { ReservedIdsModule } from './modules/reserved_ids/module';
 import { PublicCommentsModule } from './modules/public_comments/module';
 import { PrivateCommentsModule } from './modules/private_comments/module';
 import { StockModule } from './modules/stock/module';
+import { ServiceOrderStockValuesModule } from './modules/service_order_stock_values/module';
+import { ServiceOrderDetachedValuesModule } from './modules/service_order_detached_values/module';
 
 import { SecretsModule } from './modules/utils/secrets/module';
+import { UpdateServiceOrderPriceModule } from './modules/utils/update_service_order_price/module';
 
 @Module({
   imports: [
@@ -27,7 +30,10 @@ import { SecretsModule } from './modules/utils/secrets/module';
     ReservedIdsModule,
     PublicCommentsModule,
     PrivateCommentsModule,
-    StockModule
+    StockModule,
+    ServiceOrderStockValuesModule,
+    UpdateServiceOrderPriceModule,
+    ServiceOrderDetachedValuesModule,
   ],
   controllers: [],
   providers: [],

@@ -6,9 +6,11 @@ import {
     UpdateDateColumn,
     ManyToOne,
     JoinColumn,
+    OneToMany,
 } from 'typeorm';
 
 import { CompaniesEntity } from './companies.entity';
+import { ServiceOrderStockValuesEntity } from './serviceOrderStockValues.entity';
 
 @Entity('stock')
 export class StockEntity {
@@ -33,6 +35,9 @@ export class StockEntity {
     @ManyToOne(type => CompaniesEntity, company => company.stock)
     @JoinColumn({ name: 'company_id' })
     company: CompaniesEntity;
+
+    @OneToMany(type => ServiceOrderStockValuesEntity, stock => stock.stock)
+    serviceOrderValues: ServiceOrderStockValuesEntity[];
 
     @CreateDateColumn({
         type: 'timestamp with time zone',

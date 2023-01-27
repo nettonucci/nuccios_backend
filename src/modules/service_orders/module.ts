@@ -1,4 +1,4 @@
-import { Module, Global } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { ServiceOrdersController } from "./controller";
@@ -10,10 +10,11 @@ import { ClientsModule } from "../clients/module";
 import { ReservedIdsModule } from "../reserved_ids/module";
 import { PublicCommentsModule } from "../public_comments/module";
 import { PrivateCommentsModule } from "../private_comments/module";
+import { ServiceOrderStockValuesModule } from "../service_order_stock_values/module";
+import { ServiceOrderDetachedValuesModule } from "../service_order_detached_values/module";
 
 import { ServiceOrderEntity } from "../../entities/serviceOrder.entity";
 
-@Global()
 @Module({
     imports: [TypeOrmModule.forFeature([ServiceOrderEntity]), 
     CompaniesModule,
@@ -21,7 +22,9 @@ import { ServiceOrderEntity } from "../../entities/serviceOrder.entity";
     ClientsModule, 
     ReservedIdsModule,
     PublicCommentsModule,
-    PrivateCommentsModule
+    PrivateCommentsModule,
+    ServiceOrderStockValuesModule,
+    ServiceOrderDetachedValuesModule
     ],
     controllers: [ServiceOrdersController],
     providers: [ServiceOrdersService],

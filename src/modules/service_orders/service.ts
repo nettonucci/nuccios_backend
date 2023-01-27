@@ -10,6 +10,8 @@ import { ClientsService } from "../clients/service";
 import { ReservedIdsService } from "../reserved_ids/service";
 import { PublicCommentsService } from "../public_comments/service";
 import { PrivateCommentsService } from "../private_comments/service";
+import { ServiceOrderStockValuesService } from "../service_order_stock_values/service";
+import { ServiceOrderDetachedValuesService } from "../service_order_detached_values/service";
 
 @Injectable()
 export class ServiceOrdersService {
@@ -22,6 +24,8 @@ export class ServiceOrdersService {
         private readonly clientsService: ClientsService,
         private readonly publicCommentsService: PublicCommentsService,
         private readonly privateCommentsService: PrivateCommentsService,
+        private readonly serviceOrderStockValuesService: ServiceOrderStockValuesService,
+        private readonly serviceOrderDetachedValuesService: ServiceOrderDetachedValuesService,
     ) {}
 
     async getByServiceIdAndCompanyId(service_id: number, company_id: number): Promise<ServiceOrderEntity> {
@@ -60,8 +64,14 @@ export class ServiceOrdersService {
 
         const private_comments = await this.privateCommentsService.getByServiceIdAndCompanyId(service_id, company_id);
 
+        const serviceOrderStockValues = await this.serviceOrderStockValuesService.getByServiceIdAndCompanyId(service_id, company_id);
+
+        const serviceOrderDetachedValues = await this.serviceOrderDetachedValuesService.getByServiceIdAndCompanyId(service_id, company_id);
+
         serviceOrders['public_comments'] = public_comments;
         serviceOrders['private_comments'] = private_comments;
+        serviceOrders['serviceOrderStockValues'] = serviceOrderStockValues;
+        serviceOrders['serviceOrderDetachedValues'] = serviceOrderDetachedValues;
 
         return serviceOrders;
     }
@@ -98,9 +108,15 @@ export class ServiceOrdersService {
 
         const private_comments = await this.privateCommentsService.getByCompanyId(company_id);
 
+        const serviceOrderStockValues = await this.serviceOrderStockValuesService.getByCompanyId(company_id);
+
+        const serviceOrderDetachedValues = await this.serviceOrderDetachedValuesService.getByCompanyId(company_id);
+
         serviceOrders.map(serviceOrder => {
             serviceOrder['public_comments'] = [];
             serviceOrder['private_comments'] = [];
+            serviceOrder['serviceOrderStockValues'] = [];
+            serviceOrder['serviceOrderDetachedValues'] = [];
             public_comments.map(public_comment => {
                 if (serviceOrder.service_id === public_comment.service_id) {
                     serviceOrder['public_comments'].push(public_comment)
@@ -109,6 +125,16 @@ export class ServiceOrdersService {
             private_comments.map(private_comment => {
                 if (serviceOrder.service_id === private_comment.service_id) {
                     serviceOrder['private_comments'].push(private_comment)
+                }
+            })
+            serviceOrderStockValues.map(serviceOrderStockValue => {
+                if (serviceOrder.service_id === serviceOrderStockValue.service_id) {
+                    serviceOrder['serviceOrderStockValues'].push(serviceOrderStockValue)
+                }
+            })
+            serviceOrderDetachedValues.map(serviceOrderDetachedValue => {
+                if (serviceOrder.service_id === serviceOrderDetachedValue.service_id) {
+                    serviceOrder['serviceOrderDetachedValues'].push(serviceOrderDetachedValue)
                 }
             })
         })

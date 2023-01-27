@@ -11,6 +11,7 @@ import { CompaniesModule } from "../companies/module";
 @Module({
     imports: [TypeOrmModule.forFeature([StockEntity]), CompaniesModule],
     controllers: [StockController],
-    providers: [StockService]
+    providers: [StockService],
+    exports: [StockService],
 })
 export class StockModule {}

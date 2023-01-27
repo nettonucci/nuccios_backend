@@ -13,6 +13,8 @@ import { UsersEntity } from './users.entity';
 import { ClientsEntity } from './clients.entity';
 import { PublicCommentsEntity } from './publicComents.entity';
 import { PrivateCommentsEntity } from './privateComents.entity';
+import { ServiceOrderStockValuesEntity } from './serviceOrderStockValues.entity';
+import { ServiceOrderDetachedValuesEntity } from './serviceOrdersDetachedValues.entity';
 
 @Entity('service_orders')
 export class ServiceOrderEntity {
@@ -87,6 +89,12 @@ export class ServiceOrderEntity {
 
     @OneToMany(type => PrivateCommentsEntity, privateComment => privateComment.serviceOrder)
     privateComments: PrivateCommentsEntity[];
+
+    @OneToMany(type => ServiceOrderStockValuesEntity, stockValue => stockValue.serviceOrder)
+    stockValues: ServiceOrderStockValuesEntity[];
+
+    @OneToMany(type => ServiceOrderDetachedValuesEntity, detachedValue => detachedValue.serviceOrder)
+    detachedValues: ServiceOrderDetachedValuesEntity[];
 
     @CreateDateColumn({
         type: 'timestamp with time zone',
