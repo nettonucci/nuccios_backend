@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { ServiceOrdersController } from "./controller";
@@ -15,6 +15,8 @@ import { ServiceOrderDetachedValuesModule } from "../service_order_detached_valu
 
 import { ServiceOrderEntity } from "../../entities/serviceOrder.entity";
 
+import { AuthMiddleware } from "../middlewares/auth/auth.middleware";
+
 @Module({
     imports: [TypeOrmModule.forFeature([ServiceOrderEntity]), 
     CompaniesModule,
@@ -30,4 +32,10 @@ import { ServiceOrderEntity } from "../../entities/serviceOrder.entity";
     providers: [ServiceOrdersService],
     exports: [ServiceOrdersService],
 })
-export class ServiceOrdersModule {}
+export class ServiceOrdersModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+      consumer
+        .apply(AuthMiddleware)
+        .forRoutes(ServiceOrdersController);
+    }
+  }

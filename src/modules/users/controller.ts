@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Headers } from '@nestjs/common';
 
 import { UsersService } from './service';
 
@@ -22,8 +22,8 @@ export class UsersController {
     }
 
     @Post()
-    async create(@Body() data: any) {
-        return this.usersService.create(data);
+    async create(@Body() data: any, @Headers() headers: any) {
+        return this.usersService.create(data, headers);
     }
 
     @Put(':id')

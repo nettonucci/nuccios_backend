@@ -13,6 +13,8 @@ import { PrivateCommentsModule } from './modules/private_comments/module';
 import { StockModule } from './modules/stock/module';
 import { ServiceOrderStockValuesModule } from './modules/service_order_stock_values/module';
 import { ServiceOrderDetachedValuesModule } from './modules/service_order_detached_values/module';
+import { CompanySessionModule } from './modules/company_session/module';
+import { UserSessionModule } from './modules/user_session/module';
 
 import { SecretsModule } from './modules/utils/secrets/module';
 import { UpdateServiceOrderPriceModule } from './modules/utils/update_service_order_price/module';
@@ -34,6 +36,8 @@ import { UpdateServiceOrderPriceModule } from './modules/utils/update_service_or
     ServiceOrderStockValuesModule,
     UpdateServiceOrderPriceModule,
     ServiceOrderDetachedValuesModule,
+    CompanySessionModule,
+    UserSessionModule,
   ],
   controllers: [],
   providers: [],

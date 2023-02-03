@@ -29,5 +29,6 @@ export class SecretsService extends ConfigService {
 
   GOOGLE_REFRESH_TOKEN = this.get<string>('GOOGLE_REFRESH_TOKEN')
 
+  CRYPT_KEY = this.get<string>('CRYPT_KEY')
 
 }

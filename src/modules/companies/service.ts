@@ -40,15 +40,29 @@ export class CompaniesService {
 
     async create(data: CompaniesEntity): Promise<string> {
 
-        const { email, password, cnpj, company_name } = data;
+        const { email, password, cnpj, login } = data;
+
+        if (!email || !password || !cnpj || !login) {
+            throw new HttpException('Missing data', HttpStatus.BAD_REQUEST);
+        }
 
         const companyExists = await this.companiesRepository.findOne({
-            where: [ { email }, { cnpj }, { company_name } ]
+            where: [ { email }, { cnpj }, { login } ]
         });
 
         if (companyExists) {
             throw new HttpException('Company already exists', HttpStatus.BAD_REQUEST);
         }
+
+        const regex = /\d/g;
+
+        const cpfFiltered = data.cpf.match(regex).join("");
+
+        const cnpjFiltered = data.cnpj.match(regex).join("");
+
+        data.cpf = cpfFiltered;
+
+        data.cnpj = cnpjFiltered;
 
         data.password = await bcrypt.hash(password, 10);
 
@@ -65,7 +79,7 @@ export class CompaniesService {
 
     async update(id: number, data: Partial<CompaniesEntity>): Promise<string> {
 
-        const { email, cellphone, branch, cnpj } = data;
+        let { email, cellphone, branch, cnpj } = data;
 
         let company = await this.companiesRepository.findOne({ where: { id } });
 
@@ -76,6 +90,16 @@ export class CompaniesService {
         if (company.active === false) {
             throw new HttpException('Company not activated', HttpStatus.BAD_REQUEST);
         }
+
+        const regex = /\d/g;
+
+        const cpfFiltered = data.cpf.match(regex).join("");
+
+        const cnpjFiltered = cnpj.match(regex).join("");
+
+        data.cpf = cpfFiltered;
+
+        cnpj = cnpjFiltered;
 
         await this.companiesRepository.update({ id }, { email, cellphone, branch, cnpj });
 

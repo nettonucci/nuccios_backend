@@ -10,7 +10,12 @@ import { CompaniesService } from '../companies/service';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectRepository(UsersEntity) private readonly userRepository: Repository<UsersEntity>, private readonly mailService: MailService, private readonly companiesService: CompaniesService) {}
+    constructor(
+        @InjectRepository(UsersEntity) 
+        private readonly userRepository: Repository<UsersEntity>, 
+        private readonly mailService: MailService, 
+        private readonly companiesService: CompaniesService,
+        ) {}
 
     async index(): Promise<UsersEntity[]> {
         const users = await this.userRepository.find({
@@ -93,7 +98,7 @@ export class UsersService {
         return user;
     }
 
-    async create(data: UsersEntity): Promise<string> {
+    async create(data: UsersEntity, headers: any): Promise<string> {
         const { email, password, company_id } = data;
 
         const userExists = await this.userRepository.findOne({ where: [ { email }, { company_id } ] });

@@ -56,6 +56,9 @@ export class CompaniesEntity {
     cellphone: string;
 
     @Column()
+    login: string;
+
+    @Column()
     password: string;
 
     @Column({
